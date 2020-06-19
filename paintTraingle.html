@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Paint app Traingle</title>
+    <style>
+        button {
+            background-color: green;
+            width: 100px;
+            height: 50px;
+            float: bottom;
+        }
+
+        p {
+            float: center;
+        }
+    </style>
+</head>
+
+<body style="margin:0">
+    <canvas id="canvas" width="1000" height="500" style="border:5px solid darkcyan"></canvas>
+
+    <script>
+        // cordinates are stored to delete specific circles.
+        var states = {
+            pX1: [],
+            pY1: [],
+            pX2: [],
+            pY2: [],
+            pX3: [],
+            pY3: []
+        };
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        var StartX = 0;
+        var StartY = 0;
+        var IsDrawing = false,
+            imagedata;
+        var traingle, check;
+
+        function getImage() {
+            imagedata = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        }
+
+        function putImage() {
+            ctx.putImageData(imagedata, 0, 0);
+        }
+        var x1, y1, x2, y2, x3, y3, angle, angle2;
+        var colour = [2, 16, 32, 64, 128, 255, 255, 8, 0];
+        var r;
+        var start = function (e) {
+            StartX = e.clientX; //starting point
+            StartY = e.clientY;
+            IsDrawing = true;
+            getImage();
+            //ctx.save();
+            check = ctx.isPointInPath(traingle, StartX, StartY);
+            
+            //console.log(check);
+        };
+
+        function scl(e){
+            //clearR();
+            //ctx.scale(1,1);
+            //ctx.save();
+ 
+// drawing here you path second time
+
+            var currentX = e.clientX;
+            var currentY = e.clientY;
+            var radius = Math.sqrt(
+                    Math.pow(states.pX1[0] - currentX, 2) +
+                    Math.pow(states.pY1[0] - currentY, 2)
+                );
+                angle = 90 * (Math.PI / 180);
+                x1 = StartX + radius * Math.cos(angle);
+                y1 = StartY - radius * Math.sin(angle);
+                angle += (2 * Math.PI) / 3;
+                //angle2 = angle + (2 * Math.PI)/3;
+                x2 = StartX + radius * Math.cos(angle);
+                y2 = StartY - radius * Math.sin(angle);
+                angle += (2 * Math.PI) / 3;
+                x3 = StartX + radius * Math.cos(angle);
+                y3 = StartY - radius * Math.sin(angle);
+//ctx.beginPath();
+                traingle = new Path2D();
+                traingle.moveTo(x1, y1);
+                traingle.lineTo(x2, y2);
+                traingle.lineTo(x3, y3);
+                /*ctx.moveTo(x1, y1);
+                  ctx.lineTo(x2, y2);
+                  //var X2 = currentX-(currentX-StartX)*2;
+                  ctx.lineTo(x3, y3);*/
+                traingle.closePath();
+                //ctx.globalCompositeOperation='destination-out';
+                num = Math.floor(Math.random() * 10 + 1);
+                no = Math.floor(Math.random() * 10 + 1);
+                no1 = Math.floor(Math.random() * 10 + 1);
+                ctx.fillStyle = `rgb(${colour[num]},${colour[no]},${colour[no1]})`;
+                ctx.fill(traingle);
+                
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = "black";
+                ctx.stroke(traingle);
+                //ctx.restore();
+                //ctx.clip();
+                //ctx.beginPath();
+                //ctx.globalCompositeOperation='source-over';
+                
+        }
+
+        var draw = function (e) {
+            if (!IsDrawing) return;
+            //ctx.save();
+            putImage();
+           //ctx.restore();
+            var currentX = e.clientX;
+            var currentY = e.clientY;
+            
+            if (check === true) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.scale(1, 1);
+                scl(e);
+                //putImage();
+                //clearCanvas();
+                //putImage();
+                /*var radius = Math.sqrt(
+                    Math.pow(states.pX1[0] - currentX, 2) +
+                    Math.pow(states.pY1[0] - currentY, 2)
+                );
+                angle = 90 * (Math.PI / 180);
+                x1 = StartX + radius * Math.cos(angle);
+                y1 = StartY - radius * Math.sin(angle);
+                angle += (2 * Math.PI) / 3;
+                //angle2 = angle + (2 * Math.PI)/3;
+                x2 = StartX + radius * Math.cos(angle);
+                y2 = StartY - radius * Math.sin(angle);
+                angle += (2 * Math.PI) / 3;
+                x3 = StartX + radius * Math.cos(angle);
+                y3 = StartY - radius * Math.sin(angle);
+
+                traingle = new Path2D();
+                traingle.moveTo(x1, y1);
+                traingle.lineTo(x2, y2);
+                traingle.lineTo(x3, y3);*/
+                /*ctx.moveTo(x1, y1);
+                  ctx.lineTo(x2, y2);
+                  //var X2 = currentX-(currentX-StartX)*2;
+                  ctx.lineTo(x3, y3);*/
+                /*traingle.closePath();
+                num = Math.floor(Math.random() * 10 + 1);
+                no = Math.floor(Math.random() * 10 + 1);
+                no1 = Math.floor(Math.random() * 10 + 1);
+                ctx.fillStyle = `rgb(${colour[num]},${colour[no]},${colour[no1]})`;
+                ctx.fill(traingle);
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = "black";
+                ctx.stroke(traingle);*/
+                
+            } else {
+                // putImage();
+                var radius = Math.sqrt(
+                    Math.pow(StartX - currentX, 2) + Math.pow(StartY - currentY, 2)
+                );
+                angle = 90 * (Math.PI / 180);
+                x1 = StartX + radius * Math.cos(angle);
+                y1 = StartY - radius * Math.sin(angle);
+                angle += (2 * Math.PI) / 3;
+                //angle2 = angle + (2 * Math.PI)/3;
+                x2 = StartX + radius * Math.cos(angle);
+                y2 = StartY - radius * Math.sin(angle);
+                angle += (2 * Math.PI) / 3;
+                x3 = StartX + radius * Math.cos(angle);
+                y3 = StartY - radius * Math.sin(angle);
+                //console.log(`X ${x1} <> Y ${y1}`);
+
+                ctx.beginPath();
+                traingle = new Path2D();
+                traingle.moveTo(x1, y1);
+                traingle.lineTo(x2, y2);
+                traingle.lineTo(x3, y3);
+                /*ctx.moveTo(x1, y1);
+                  ctx.lineTo(x2, y2);
+                  //var X2 = currentX-(currentX-StartX)*2;
+                  ctx.lineTo(x3, y3);*/
+                traingle.closePath();
+                num = Math.floor(Math.random() * 10 + 1);
+                no = Math.floor(Math.random() * 10 + 1);
+                no1 = Math.floor(Math.random() * 10 + 1);
+                ctx.fillStyle = `rgb(${colour[num]},${colour[no]},${colour[no1]})`;
+                ctx.fill(traingle);
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = "black";
+                ctx.stroke(traingle);
+            }
+            //ctx.restore();
+        };
+        var stop1 = function (e) {
+            //var sv = canvas.toDataURL();
+            //void ctx.drawImage(sv, 10, 10);
+            //console.log(img);
+            IsDrawing = false;
+            //ctx.globalCompositeOperation = "destination-out";
+            // putImage();
+            states.pX1.push(x1);
+            states.pY1.push(y1);
+            states.pX2.push(x2);
+            states.pY2.push(y2);
+            states.pX3.push(x3);
+            states.pY3.push(y3);
+            r = Math.sqrt(Math.pow(states.pY2[0] - states.pY1[0] ,2) + Math.pow(states.pX1[0]-states.pX2[0],2));
+            //console.log();
+            console.log(` X1 - ${x1} \n y1 - ${y1} \n x2 - ${y2} \n y2 - ${y2} \n clientx ${e.clientX} \n clienty ${e.clientY}`);
+            var gett = ctx.getTransform();
+            console.log(gett);
+        };
+
+        function clipR() {
+            for(let i = 30; i < 90; i++){
+                //var angle4 = (i / Math.round(Math.PI * r)) * 360;
+                ctx.clearRect(states.pX2[0], states.pY2[0], 
+                 Math.sin(i * (Math.PI / 180)) * r, -Math.cos(i * (Math.PI / 180)) * r);
+                /*  console.log("Sin " + Math.sin(i * (Math.PI / 180)) * r);
+    
+                console.log("Cos " + Math.cos(i * (Math.PI / 180)) * r); */
+            }
+            
+        }
+        function clearR() {
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        canvas.addEventListener("mousedown", start,false);
+        canvas.addEventListener("mousemove", draw,false);
+        canvas.addEventListener("mouseup", stop1,false);
+        //canvas.addEventListener('dblclick', clipR);
+        document.addEventListener("keypress", function (event) {
+            if (event.keyCode === 13 || event.which === 13) {
+                clipR();
+            }
+        });
+    </script>
+    <button id="btn">Reset</button>
+    <p>Press Enter to clear circles</p>
+    <script>
+        var button = document.getElementById("btn");
+        button.addEventListener("click", clearR);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Rectangle</title>
+    <style>
+        button {
+            background-color: green;
+            width: 100px;
+            height: 50px;
+            float: bottom;
+        }
+
+        p {
+            float: center;
+        }
+    </style>
+</head>
+
+<body style="margin:0">
+    <canvas id="canvas" width="1000" height="500" style="border:5px solid darkcyan"></canvas>
+
+    <script>
+        var states = []; // Array of objects to store rectangle points, width and height
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        var StartX = 0;  // starting x coordinate of rectangle
+        var StartY = 0; // starting y coodinate of rectangle
+        var IsDrawing = false // flag for drawing
+        var rectangle, clr, del = false,// flag for deletion of rectangle 
+            idx;
+
+        function getImage() {
+            imagedata = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        }
+
+        function putImage() {
+            ctx.putImageData(imagedata, 0, 0);
+        }
+        var colour = [2, 16, 32, 64, 128, 255, 255, 8, 0];
+
+        // function to draw rectangle params event, start X and Y points.
+        function drawRect(e, x, y) {
+            var currentX = e.clientX - x;
+            var currentY = e.clientY - y;
+            ctx.beginPath();
+            rectangle = new Path2D();
+            rectangle.rect(x, y, currentX, currentY);
+            ctx.fill(rectangle);
+            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = "black";
+            ctx.stroke(rectangle);
+        }
+        // function to check if clicked point lies in any rectangle or not.
+        function checkRect(e) {
+            for (let i = 0; i < states.length; i++) { 
+                var tempPoint = states[i];
+                if (tempPoint.X1 <= e.clientX && e.clientX <= tempPoint.X1 + tempPoint.width &&
+                    tempPoint.Y1 <= e.clientY && e.clientY <= tempPoint.Y1 + tempPoint.height) {
+                    idx = i;
+                    del = true;
+                }
+            }
+
+        }
+        // start function when mouse is clicked
+        var start = function (e) {
+            StartX = e.clientX;
+            StartY = e.clientY;
+            IsDrawing = true;
+            getImage();
+            checkRect(e);
+        };
+   
+        // Draw function when mouse id dragged.
+        var draw = function (e) {
+            if (!IsDrawing) return;
+            putImage();
+            if (del) { // if point lies in any rectangle then clear that and draw another rectangle of same points.
+                ctx.clearRect(states[idx].X1 -2, states[idx].Y1 -2 , 
+                              states[idx].width +3, states[idx].height +3);
+                drawRect(e, states[idx].X1, states[idx].Y1);
+            } else { // else draw a new rectangle.
+                drawRect(e, StartX, StartY);
+            }
+        };
+
+        // stop1 function on mouseup eventlistener.
+        var stop1 = function (e) {
+            num = Math.floor(Math.random() * 10 + 1);
+            no = Math.floor(Math.random() * 10 + 1);
+            no1 = Math.floor(Math.random() * 10 + 1);
+            clr = `rgb(${colour[num]},${colour[no]},${colour[no1]})`;
+            ctx.fillStyle = clr;
+            // stores the current state of points in states array.
+            var points = { 
+                X1: StartX,
+                Y1: StartY,
+                width: e.clientX - StartX,
+                height: e.clientY - StartY,
+                rColour: clr
+            }
+
+            IsDrawing = false;
+            states.push(points);
+
+            del = false;
+        };
+         
+        // function for clearing retangles on dbclick..
+        function clipR() {
+            ctx.clearRect(states[idx].X1 - 2, states[idx].Y1 -2, states[idx].width +3, states[idx].height+3);
+        }
+ 
+        // function to clear entire canvas..
+        function clearR() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        canvas.addEventListener("mousedown", start, false);
+        canvas.addEventListener("mousemove", draw, false);
+        canvas.addEventListener("mouseup", stop1, false);
+        canvas.addEventListener('dblclick', clipR,false);
+        var idx2 =0;
+        // event listener to clear rectangles on enter press.
+        document.addEventListener("keypress", function (event) {
+            if (event.keyCode === 13 || event.which === 13) {
+                if(idx2 < states.length){
+                ctx.clearRect(states[idx2].X1 -2, states[idx2].Y1 -2, 
+                states[idx2].width +3, states[idx2].height + 3);
+                //states.splice(idx2,1);
+                idx2++;
+                }
+            }
+        });
+    </script>
+    <button id="btn">Reset</button>
+    <p>Press Enter to clear Rectangle</p>
+    <script>
+        var button = document.getElementById("btn");
+        button.addEventListener("click", clearR);
+    </script>
+</body>
+
+</html>
