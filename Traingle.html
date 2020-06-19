@@ -112,30 +112,30 @@
                 var radius = Math.sqrt(
                     Math.pow(StartX - currentX, 2) + Math.pow(StartY - currentY, 2)
                 );
+                /* ctx.fillText(Math.floor(radius),StartX,StartY);
+                console.log(` rX  ${Math.pow(StartX - currentX, 2)} \n rY  ${Math.pow(StartY - currentY, 2)} \n x2  ${currentX} \n y2  ${currentY} \n subX ${StartX - currentX} \n suby ${StartY - currentY}`)
                 line = new Path2D();
-                line.moveTo(StartX,StartY);
-                //arcc = new Path2D();
+                line.moveTo(StartX,StartY); */
                 angle = 90 * (Math.PI / 180);
                 
                 x1 = StartX + radius * Math.cos(angle);
                 y1 = StartY - radius * Math.sin(angle);
-                ctx.font = "20px Georgia";
-                ctx.fillText(angle * (180/Math.PI), x1, y1-10);
+                /* ctx.font = "20px Georgia";
+                ctx.fillText(angle * (180/Math.PI), x1, y1-10); */
                 angle += (2 * Math.PI) / 3;
-                //angle2 = angle + (2 * Math.PI)/3;
                 
                 x2 = StartX + radius * Math.cos(angle);
                 y2 = StartY - radius * Math.sin(angle);
-                ctx.fillText(angle * (180/Math.PI), x2-40, y2);
+                // ctx.fillText(angle * (180/Math.PI), x2-40, y2);
                 angle += (2 * Math.PI) / 3;
                 
                 x3 = StartX + radius * Math.cos(angle);
                 y3 = StartY - radius * Math.sin(angle);
-                ctx.fillText(angle * (180/Math.PI), x3+10, y3);
-                                line.lineTo(x1,y1);
-                ctx.stroke(line);
-                ctx.arc(StartX,StartY,radius,0,2*Math.PI);
-                ctx.stroke();
+                /* ctx.fillText(angle * (180/Math.PI), x3+10, y3);
+                line.lineTo(x1,y1);
+                ctx.stroke(line); */
+                /* ctx.arc(StartX,StartY,radius,0,2*Math.PI);
+                ctx.stroke(); */
                 //console.log(`X ${x1} <> Y ${y1}`);
 
                 ctx.beginPath();
