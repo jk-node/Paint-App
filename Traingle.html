@@ -29,7 +29,7 @@
         var StartX = 0;
         var StartY = 0;
         var IsDrawing = false,
-            imagedata, traingle, check, line, x1, y1, x2, y2, x3, y3, angle1, angle2,angle3; 
+            imagedata, traingle, check = false, line, x1, y1, x2, y2, x3, y3, angle1, angle2,angle3,radius,curr,index; 
         angle1 = 90 * (Math.PI / 180);
         angle2 = angle1 + (2 * Math.PI) / 3;
         angle3 = angle2 + (2 * Math.PI) / 3;
@@ -43,43 +43,55 @@
             ctx.putImageData(imagedata, 0, 0);
         }
 
-
-        var start = function (e) {
-            StartX = e.clientX; //starting point
-            StartY = e.clientY;
-            IsDrawing = true;
-            getImage();
-            check = ctx.isPointInPath(traingle, StartX, StartY);
-            //console.log(check);
-        };
-
-        function scl(e){
-            // drawing here you path second time
-            var currentX = e.clientX;
-            var currentY = e.clientY;
+        function checkPath(){
             for(let i = 0; i < Traingles.length; i++){
+                var curTraingle = Traingles[i];
+               /*  radius = Math.sqrt(
+                    Math.pow(curTraingle.start_x - currentX, 2) +
+                    Math.pow(curTraingle.start_y - currentY, 2)
+                ); */
+                radius = curTraingle.rad;
+                x1 = curTraingle.start_x + radius * Math.cos(angle1);
+                y1 = curTraingle.start_y - radius * Math.sin(angle1);
                 
-            }
-            var radius = Math.sqrt(
-                    Math.pow(Traingles[0].start_x - currentX, 2) +
-                    Math.pow(Traingles[0].start_y - currentY, 2)
-                );
+                x2 = curTraingle.start_x + radius * Math.cos(angle2);
+                y2 = curTraingle.start_y - radius * Math.sin(angle2);
                 
-                x1 = Traingles[0].start_x + radius * Math.cos(angle1);
-                y1 = Traingles[0].start_y - radius * Math.sin(angle1);
-                
-                x2 = Traingles[0].start_x + radius * Math.cos(angle2);
-                y2 = Traingles[0].start_y - radius * Math.sin(angle2);
-                
-                x3 = Traingles[0].start_x + radius * Math.cos(angle3);
-                y3 = Traingles[0].start_y - radius * Math.sin(angle3);
+                x3 = curTraingle.start_x + radius * Math.cos(angle3);
+                y3 = curTraingle.start_y - radius * Math.sin(angle3);
                 
                 traingle = new Path2D();
                 traingle.moveTo(x1, y1);
                 traingle.lineTo(x2, y2);
                 traingle.lineTo(x3, y3);
                 traingle.closePath();
+                if(ctx.isPointInPath(traingle,StartX,StartY)){
+                    check = true;
+                    index = i;
+                    return curTraingle;
+                }
+            }
 
+    }
+    function redraw(){
+        for(let i=0; i < Traingles.length; i++){
+                var curTraingle = Traingles[i];
+                if(curTraingle.start_x !== curr.start_x){
+                radius = curTraingle.rad;
+                x1 = curTraingle.start_x + radius * Math.cos(angle1);
+                y1 = curTraingle.start_y - radius * Math.sin(angle1);
+                
+                x2 = curTraingle.start_x + radius * Math.cos(angle2);
+                y2 = curTraingle.start_y - radius * Math.sin(angle2);
+                
+                x3 = curTraingle.start_x + radius * Math.cos(angle3);
+                y3 = curTraingle.start_y - radius * Math.sin(angle3);
+                
+                traingle = new Path2D();
+                traingle.moveTo(x1, y1);
+                traingle.lineTo(x2, y2);
+                traingle.lineTo(x3, y3);
+                traingle.closePath();
                 num = Math.floor(Math.random() * 10 + 1);
                 no = Math.floor(Math.random() * 10 + 1);
                 no1 = Math.floor(Math.random() * 10 + 1);
@@ -87,7 +99,56 @@
                 ctx.fill(traingle);
                 ctx.lineWidth = 1.5;
                 ctx.strokeStyle = "black";
-                ctx.stroke(traingle);
+                ctx.stroke(traingle);                    
+                }else{
+                    Traingles.splice(index,1);
+                    continue;
+                }
+ 
+            }
+    }
+        var start = function (e) {
+            StartX = e.clientX; //starting point
+            StartY = e.clientY;
+            IsDrawing = true;
+            getImage();
+            curr = checkPath();
+            console.log(curr);
+            //console.log(check);
+        };
+
+        function scl(e){
+            // drawing here you path second time
+            var currentX = e.clientX;
+            var currentY = e.clientY;
+
+            redraw();
+            radius = Math.sqrt(
+                    Math.pow(curr.start_x - currentX, 2) +
+                    Math.pow(curr.start_y - currentY, 2)
+                ); 
+                x1 = curr.start_x + radius * Math.cos(angle1);
+                y1 = curr.start_y - radius * Math.sin(angle1);
+                
+                x2 = curr.start_x + radius * Math.cos(angle2);
+                y2 = curr.start_y - radius * Math.sin(angle2);
+                
+                x3 = curr.start_x + radius * Math.cos(angle3);
+                y3 = curr.start_y - radius * Math.sin(angle3);
+                
+                traingle = new Path2D();
+                traingle.moveTo(x1, y1);
+                traingle.lineTo(x2, y2);
+                traingle.lineTo(x3, y3);
+                traingle.closePath();
+                num = Math.floor(Math.random() * 10 + 1);
+                no = Math.floor(Math.random() * 10 + 1);
+                no1 = Math.floor(Math.random() * 10 + 1);
+                ctx.fillStyle = `rgb(${colour[num]},${colour[no]},${colour[no1]})`;
+                ctx.fill(traingle);
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = "black";
+                ctx.stroke(traingle);               
                 
         }
 
@@ -98,7 +159,7 @@
             var currentY = e.clientY;
             
             if (check !== true) {
-                var radius = Math.sqrt(
+                radius = Math.sqrt(
                     Math.pow(StartX - currentX, 2) + Math.pow(StartY - currentY, 2)
                 );
                 /* ctx.fillText(Math.floor(radius),StartX,StartY);
@@ -148,6 +209,7 @@
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 //ctx.scale(1, 1);
                 scl(e); 
+                //Traingles.splice(index,1);
             }
 
         };
@@ -166,34 +228,39 @@
                 X3: x3,
                 Y3: y3,
                 start_x: StartX,
-                start_y: StartY
+                start_y: StartY,
+                rad: radius
             });
+            
             //console.log();
             //console.log(` X1 - ${x1} \n y1 - ${y1} \n x2 - ${y2} \n y2 - ${y2} \n clientx ${e.clientX} \n clienty ${e.clientY}`);
             //var gett = ctx.getTransform();
-            console.table(Traingles);
+            var rect = canvas.getBoundingClientRect();
+            var path = new Path2D(traingle);
+            console.log(Traingles);
+            console.table(index);
         };
 
-        function clipR() {
-            for(let i = 30; i < 90; i++){
-                //var angle4 = (i / Math.round(Math.PI * r)) * 360;
-                ctx.clearRect(states.pX2[0], states.pY2[0], 
-                 Math.sin(i * (Math.PI / 180)) * r, -Math.cos(i * (Math.PI / 180)) * r);
-                /*  console.log("Sin " + Math.sin(i * (Math.PI / 180)) * r);
-    
-                console.log("Cos " + Math.cos(i * (Math.PI / 180)) * r); */
-            }
+        function clipR(e) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            redraw();
+            e.preventDefault();
+            console.log("deleted");
             
         }
         function clearR() {
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
-
+/*         canvas.onmousemove= function (e){
+            //console.log(e.clientX,e.clientY);
+        } */
+        
         canvas.addEventListener("mousedown", start,false);
         canvas.addEventListener("mousemove", draw,false);
         canvas.addEventListener("mouseup", stop1,false);
-        //canvas.addEventListener('dblclick', clipR);
+        canvas.addEventListener('dblclick', clipR);
         document.addEventListener("keypress", function (event) {
             if (event.keyCode === 13 || event.which === 13) {
                 clipR();
