@@ -1,41 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Triangle</title>
     <style>
-        button {
-            background-color: green;
-            width: 100px;
-            height: 50px;
-            float: bottom;
+        * {
+            box-sizing: border-box;
         }
 
-        p {
-            float: center;
+        button {
+            background-color: rgb(129, 201, 129);
+            font-size: 1.3em;
+            font-weight: bold;
+            width: 200px;
+            height: 35px;
+            margin: 2px 0 0 500px;
+            display: inline-block;
+            box-shadow: 2px 2px 5px blue;
         }
     </style>
 </head>
+
 <body style="margin:0">
-    <canvas id="canvas" width="1000" height="500" style="border:5px solid darkcyan"></canvas>
-    <button id="btn">Reset</button>
-    <p>Press Enter to clear traingle</p>
+    <canvas id="canvas" width="1200" height="500" style="border:5px solid darkcyan"></canvas>
+    <button id="btn">Clear</button>
     <script>
         // cordinates are stored to delete specific circles.
-        var Traingles = [];
+        var Triangles = [];
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
         var StartX = 0;
         var StartY = 0;
         var IsDrawing = false,
-            imagedata, traingle, check = false, line, x1, y1, x2, y2, x3, y3, angle1, angle2,angle3,radius,curr,index;
-            var flag = false; 
+            imagedata, triangle, check = false,
+            line, x1, y1, x2, y2, x3, y3, angle1, angle2, angle3, radius, curr, index;
+        var flag = false;
         angle1 = 90 * (Math.PI / 180);
         angle2 = angle1 + (2 * Math.PI) / 3;
         angle3 = angle2 + (2 * Math.PI) / 3;
-        var colour = [2, 16, 32, 64, 128, 255, 255, 8, 0];
-        var r;
+
         function getImage() {
             imagedata = ctx.getImageData(0, 0, canvas.width, canvas.height);
         }
@@ -43,75 +48,78 @@
         function putImage() {
             ctx.putImageData(imagedata, 0, 0);
         }
-        function getColor(){
+
+        function createTriangle(Radious, centerX, centerY) {
+            x1 = centerX + Radious * Math.cos(angle1);
+            y1 = centerY - Radious * Math.sin(angle1);
+            x2 = centerX + Radious * Math.cos(angle2);
+            y2 = centerY - Radious * Math.sin(angle2);
+            x3 = centerX + Radious * Math.cos(angle3);
+            y3 = centerY - Radious * Math.sin(angle3);
+            triangle = new Path2D();
+            triangle.moveTo(x1, y1);
+            triangle.lineTo(x2, y2);
+            triangle.lineTo(x3, y3);
+            triangle.closePath();
+        }
+
+        function getColor() {
             var letters = '0123456789ABCDEF';
             var Color = '#';
             for (var i = 0; i < 6; i++) {
                 Color += letters[Math.floor(Math.random() * 16)];
             }
             return Color;
-
         }
-        function checkPath(){
-            for(let i = 0; i < Traingles.length; i++){
-                var curTraingle = Traingles[i];
-                let radius = curTraingle.rad;
-                x1 = curTraingle.start_x + radius * Math.cos(angle1);
-                y1 = curTraingle.start_y - radius * Math.sin(angle1);
-                
-                x2 = curTraingle.start_x + radius * Math.cos(angle2);
-                y2 = curTraingle.start_y - radius * Math.sin(angle2);
-                
-                x3 = curTraingle.start_x + radius * Math.cos(angle3);
-                y3 = curTraingle.start_y - radius * Math.sin(angle3);
-                
-                traingle = new Path2D();
-                traingle.moveTo(x1, y1);
-                traingle.lineTo(x2, y2);
-                traingle.lineTo(x3, y3);
-                traingle.closePath();
-                if(ctx.isPointInPath(traingle,StartX,StartY)){
+
+        function checkPath() {
+            for (let i = 0; i < Triangles.length; i++) {
+                var curTriangle = Triangles[i];
+                let radius = curTriangle.rad;
+                createTriangle(radius, curTriangle.start_x, curTriangle.start_y);
+                if (ctx.isPointInPath(triangle, StartX, StartY)) {
                     check = true;
                     index = i;
-                    return curTraingle;
+                    return curTriangle;
                 }
             }
+        }
 
-    }
-    function redraw(){
-        for(let i=0; i < Traingles.length; i++){
-                var curTraingle = Traingles[i];
-                if(curTraingle.start_x !== curr.start_x){
-                let radius = curTraingle.rad;
-                x1 = curTraingle.start_x + radius * Math.cos(angle1);
-                y1 = curTraingle.start_y - radius * Math.sin(angle1);
-                
-                x2 = curTraingle.start_x + radius * Math.cos(angle2);
-                y2 = curTraingle.start_y - radius * Math.sin(angle2);
-                
-                x3 = curTraingle.start_x + radius * Math.cos(angle3);
-                y3 = curTraingle.start_y - radius * Math.sin(angle3);
-                
-                traingle = new Path2D();
-                traingle.moveTo(x1, y1);
-                traingle.lineTo(x2, y2);
-                traingle.lineTo(x3, y3);
-                traingle.closePath();
-                ctx.fillStyle = curTraingle.colour;
-                ctx.fill(traingle);
-                ctx.lineWidth = 1.5;
-                ctx.strokeStyle = "grey";
-                ctx.stroke(traingle);
-                //console.log("Yes");                   
-                }else{
-                    Traingles.splice(index,1);
-                    console.log("drawn");
+        function redrawAllTriangles() {
+            for (let i = 0; i < Triangles.length; i++) {
+                var curTriangle = Triangles[i];
+                if (curTriangle.start_x !== curr.start_x) {
+                    let radius = curTriangle.rad;
+                    createTriangle(radius, curTriangle.start_x, curTriangle.start_y);
+                    ctx.fillStyle = curTriangle.colour;
+                    ctx.fill(triangle);
+                    ctx.lineWidth = 1.5;
+                    ctx.strokeStyle = "black";
+                    ctx.stroke(triangle);                   
+                } else {
+                    Triangles.splice(index, 1);
                     continue;
                 }
-                
             }
-            
-    }
+        }
+        function dragTriangle(e) {
+            // drawing here you path second time
+            var currentX = e.clientX;
+            var currentY = e.clientY;
+            StartX = curr.start_x;
+            StartY = curr.start_y;
+            radius = Math.sqrt(
+                Math.pow(StartX - currentX, 2) +
+                Math.pow(StartY - currentY, 2)
+            );
+            createTriangle(radius, StartX, StartY);
+            ctx.fillStyle = curr.colour;
+            ctx.fill(triangle);
+            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = "grey";
+            ctx.stroke(triangle);
+        }
+
         var start = function (e) {
             StartX = e.clientX; //starting point
             StartY = e.clientY;
@@ -119,87 +127,37 @@
             getImage();
             curr = checkPath();
             console.log(curr);
-            //console.log(check);
         };
-
-        function scl(e){
-            // drawing here you path second time
-            //redraw();
-            var currentX = e.clientX;
-            var currentY = e.clientY;
-            StartX = curr.start_x;
-            StartY= curr.start_y;
-            radius = Math.sqrt(
-                    Math.pow(curr.start_x - currentX, 2) +
-                    Math.pow(curr.start_y - currentY, 2)
-                ); 
-                x1 = curr.start_x + radius * Math.cos(angle1);
-                y1 = curr.start_y - radius * Math.sin(angle1);
-                
-                x2 = curr.start_x + radius * Math.cos(angle2);
-                y2 = curr.start_y - radius * Math.sin(angle2);
-                
-                x3 = curr.start_x + radius * Math.cos(angle3);
-                y3 = curr.start_y - radius * Math.sin(angle3);
-                
-                traingle = new Path2D();
-                traingle.moveTo(x1, y1);
-                traingle.lineTo(x2, y2);
-                traingle.lineTo(x3, y3);
-                traingle.closePath();
-
-                ctx.fillStyle = curr.colour;
-                ctx.fill(traingle);
-                ctx.lineWidth = 1.5;
-                ctx.strokeStyle = "grey";
-                ctx.stroke(traingle);               
-                
-        }
 
         var draw = function (e) {
             if (!IsDrawing) return;
             putImage();
             var currentX = e.clientX;
             var currentY = e.clientY;
-            
+
             if (!check) {
                 radius = Math.sqrt(
                     Math.pow(StartX - currentX, 2) + Math.pow(StartY - currentY, 2)
                 );
-  
-                x1 = StartX + radius * Math.cos(angle1);
-                y1 = StartY - radius * Math.sin(angle1);
-
-                x2 = StartX + radius * Math.cos(angle2);
-                y2 = StartY - radius * Math.sin(angle2);
-
-                x3 = StartX + radius * Math.cos(angle3);
-                y3 = StartY - radius * Math.sin(angle3);
-
-                ctx.beginPath();
-                traingle = new Path2D();
-                traingle.moveTo(x1, y1);
-                traingle.lineTo(x2, y2);
-                traingle.lineTo(x3, y3);
-                traingle.closePath();
+                createTriangle(radius, StartX, StartY);
 
                 ctx.fillStyle = getColor();
-                ctx.fill(traingle);
+                ctx.fill(triangle);
                 ctx.lineWidth = 1.5;
                 ctx.strokeStyle = "black";
-                ctx.stroke(traingle);
+                ctx.stroke(triangle);
 
-            }else{
+            } else {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                redraw();
-                scl(e); 
+                redrawAllTriangles();
+                dragTriangle(e);
             }
 
         };
 
-        var stop1 = function (e) {
+        var stop = function (e) {
             IsDrawing = false;
-            Traingles.push({
+            Triangles.push({
                 X1: x1,
                 Y1: y1,
                 X2: x2,
@@ -212,45 +170,44 @@
                 colour: ctx.fillStyle
             });
             var rect = canvas.getBoundingClientRect();
-            check = false; 
-            console.table(Traingles);
-            console.log(ctx.fillStyle);
+            check = false;
+            console.log(Triangles);
         };
 
-        var clipR =function (e) {
-            StartX = e.clientX;
-            StartY = e.clientY;
+        var clipR = function (e) {
+            // StartX = e.clientX;
+            // StartY = e.clientY;
             curr = checkPath();
-            //Traingles.splice(index,1);
-            if(check){
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            //setTimeout(redraw,300);
-            console.log("deleted");
-            redraw();
-            IsDrawing = false;
-            //e.preventDefault();                
+            //Triangles.splice(index,1);
+            if (check) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                console.log("deleted");
+                redrawAllTriangles();
+                IsDrawing = false;
+                e.stopPropagation()
+                e.stopImmediatePropagation();              
             }
-   
+            
         }
-        function clearR() {
 
+        function clearCanavs() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            Triangles = [];
+            console.clear();
         }
-/*         canvas.onmousemove= function (e){
-            //console.log(e.clientX,e.clientY);
-        } */
-        
-        canvas.addEventListener("mousedown", start,false);
-        canvas.addEventListener("mousemove", draw,false);
-        canvas.addEventListener("mouseup", stop1,false);
-        canvas.addEventListener("contextmenu", clipR,false);
+
+        canvas.addEventListener("mousedown", start);
+        canvas.addEventListener("mousemove", draw);
+        canvas.addEventListener("mouseup", stop);
+        canvas.addEventListener("dblclick", clipR, false);
         document.addEventListener("keypress", function (event) {
             if (event.keyCode === 13 || event.which === 13) {
                 clipR();
             }
         });
         var button = document.getElementById("btn");
-        button.addEventListener("click", clearR);
+        button.addEventListener("click", clearCanavs);
     </script>
 </body>
+
 </html>
