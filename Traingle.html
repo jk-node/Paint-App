@@ -43,15 +43,19 @@
         function putImage() {
             ctx.putImageData(imagedata, 0, 0);
         }
+        function getColor(){
+            var letters = '0123456789ABCDEF';
+            var Color = '#';
+            for (var i = 0; i < 6; i++) {
+                Color += letters[Math.floor(Math.random() * 16)];
+            }
+            return Color;
 
+        }
         function checkPath(){
             for(let i = 0; i < Traingles.length; i++){
                 var curTraingle = Traingles[i];
-               /*  radius = Math.sqrt(
-                    Math.pow(curTraingle.start_x - currentX, 2) +
-                    Math.pow(curTraingle.start_y - currentY, 2)
-                ); */
-                radius = curTraingle.rad;
+                let radius = curTraingle.rad;
                 x1 = curTraingle.start_x + radius * Math.cos(angle1);
                 y1 = curTraingle.start_y - radius * Math.sin(angle1);
                 
@@ -78,7 +82,7 @@
         for(let i=0; i < Traingles.length; i++){
                 var curTraingle = Traingles[i];
                 if(curTraingle.start_x !== curr.start_x){
-                radius = curTraingle.rad;
+                let radius = curTraingle.rad;
                 x1 = curTraingle.start_x + radius * Math.cos(angle1);
                 y1 = curTraingle.start_y - radius * Math.sin(angle1);
                 
@@ -93,13 +97,10 @@
                 traingle.lineTo(x2, y2);
                 traingle.lineTo(x3, y3);
                 traingle.closePath();
-                num = Math.floor(Math.random() * 10 + 1);
-                no = Math.floor(Math.random() * 10 + 1);
-                no1 = Math.floor(Math.random() * 10 + 1);
-                ctx.fillStyle = `rgb(${colour[num]},${colour[no]},${colour[no1]})`;
+                ctx.fillStyle = curTraingle.colour;
                 ctx.fill(traingle);
                 ctx.lineWidth = 1.5;
-                ctx.strokeStyle = "black";
+                ctx.strokeStyle = "grey";
                 ctx.stroke(traingle);
                 //console.log("Yes");                   
                 }else{
@@ -123,8 +124,11 @@
 
         function scl(e){
             // drawing here you path second time
+            //redraw();
             var currentX = e.clientX;
             var currentY = e.clientY;
+            StartX = curr.start_x;
+            StartY= curr.start_y;
             radius = Math.sqrt(
                     Math.pow(curr.start_x - currentX, 2) +
                     Math.pow(curr.start_y - currentY, 2)
@@ -143,13 +147,11 @@
                 traingle.lineTo(x2, y2);
                 traingle.lineTo(x3, y3);
                 traingle.closePath();
-                num = Math.floor(Math.random() * 10 + 1);
-                no = Math.floor(Math.random() * 10 + 1);
-                no1 = Math.floor(Math.random() * 10 + 1);
-                ctx.fillStyle = `rgb(${colour[num]},${colour[no]},${colour[no1]})`;
+
+                ctx.fillStyle = curr.colour;
                 ctx.fill(traingle);
                 ctx.lineWidth = 1.5;
-                ctx.strokeStyle = "black";
+                ctx.strokeStyle = "grey";
                 ctx.stroke(traingle);               
                 
         }
@@ -179,12 +181,9 @@
                 traingle.moveTo(x1, y1);
                 traingle.lineTo(x2, y2);
                 traingle.lineTo(x3, y3);
-
                 traingle.closePath();
-                num = Math.floor(Math.random() * 10 + 1);
-                no = Math.floor(Math.random() * 10 + 1);
-                no1 = Math.floor(Math.random() * 10 + 1);
-                ctx.fillStyle = `rgb(${colour[num]},${colour[no]},${colour[no1]})`;
+
+                ctx.fillStyle = getColor();
                 ctx.fill(traingle);
                 ctx.lineWidth = 1.5;
                 ctx.strokeStyle = "black";
@@ -209,12 +208,13 @@
                 Y3: y3,
                 start_x: StartX,
                 start_y: StartY,
-                rad: radius
+                rad: radius,
+                colour: ctx.fillStyle
             });
             var rect = canvas.getBoundingClientRect();
             check = false; 
-            //console.log(Traingles);
-            //console.table(index);
+            console.table(Traingles);
+            console.log(ctx.fillStyle);
         };
 
         var clipR =function (e) {
